@@ -14,3 +14,9 @@ QStringList MetaData::metadataList() const
 {
     return m_metadata.keys();
 }
+
+void MetaData::removeMetadata(QString key)
+{
+    if (m_metadata.contains(key))
+        m_metadata.remove(key);
+}

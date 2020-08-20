@@ -33,6 +33,8 @@ public:
     {
         m_metadata[name] = QVariant::fromValue(value);
     }
+
+    void removeMetadata(QString);
 };
 
 #endif // METADATA_H
