@@ -1,4 +1,5 @@
 QT -= gui
+QT += core quick
 
 TEMPLATE = lib
 DEFINES += DESIGNPATTERN_LIBRARY
@@ -18,11 +19,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     designpattern.cpp \
+    liveqmlengine.cpp \
     metadata.cpp
 
 HEADERS += \
     DesignPattern_global.h \
     designpattern.h \
+    liveqmlengine.h \
     metadata.h
 
 # Default rules for deployment.
