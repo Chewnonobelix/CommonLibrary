@@ -1,34 +1,49 @@
 #include "liveqmlengine.h"
 
-namespace DesignPattern {
+//using namespace DesignPattern;
 
-LiveQmlEngine::LiveQmlEngine(QObject* parent)
-	: QObject(parent) {
-	auto* context = qmlEngine().rootContext();
-	context->setContextProperty("_liveQmlEngine", this);
+QString LiveQmlEngine::qmlSourceDir() const
+{
+    return m_qmlSourceDir;
+}
+
+void LiveQmlEngine::setQmlSourceDir(QString qmlSourceDir)
+{
+    m_qmlSourceDir = qmlSourceDir;
+}
+
+LiveQmlEngine::LiveQmlEngine(QObject *parent, QString sourceDir)
+    : QObject(parent), m_qmlSourceDir(sourceDir)
+{
+    auto *context = qmlEngine().rootContext();
+    context->setContextProperty("_liveQmlEngine", this);
+    qDebug() << "Liver";
 #ifdef ENABLE_HOTRELOADING
+    qDebug() << "Liver";
 
-    connect(&(m_engine),
-            &QQmlApplicationEngine::objectCreated,
-            this,
-            &LiveQmlEngine::onObjectCreated);
+    connect(&m_engine, &QQmlApplicationEngine::objectCreated, this, &LiveQmlEngine::onObjectCreated);
 
-    connect(&m_watcher),
-            &QFileSystemWatcher::fileChanged,
-            this,
-            &LiveQmlEngine::onFileChanged);
-    connect(&m_watcher),
-            &QFileSystemWatcher::directoryChanged,
-            this,
-            &LiveQmlEngine::onFileChanged);
+    connect(&m_watcher, &QFileSystemWatcher::fileChanged, this, &LiveQmlEngine::onFileChanged);
+    connect(&m_watcher, &QFileSystemWatcher::directoryChanged, this, &LiveQmlEngine::onFileChanged);
 
-    QDir dir(QString(ARTLANTIS_QML_SOURCE));
+    QDir dir(qmlSourceDir());
+    qDebug() << dir << qmlSourceDir();
+    QList<QFileInfo> list = dir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
 
-    auto infoList = dir.entryInfoList(QStringList("*.qml"));
-
-    for (auto it : infoList) {
-        m_watcher.addPath(it.absoluteFilePath());
+    while (!list.isEmpty()) {
+        dir.cd(list.first().absoluteFilePath());
+        qDebug() << dir.absolutePath();
+        auto infoList = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
+        for (auto it : infoList) {
+            if (it.isDir()) {
+                list << it;
+            } else if (it.suffix() == "qml") {
+                m_watcher.addPath(it.absoluteFilePath());
+            }
+        }
+        list.pop_front();
     }
+    qDebug() << m_watcher.files();
 #endif
 }
 
@@ -42,7 +57,7 @@ void LiveQmlEngine::createWindow(QUrl path)
 
     QString source = path.toString().split("/").last();
 #ifdef ENABLE_HOTRELOADING //Setup qml source dir
-    source.prepend(QML_SOURCE);
+    source.prepend(qmlSourceDir());
     source.prepend("file:/");
 #else
     source.prepend("qrc:/");
@@ -78,5 +93,3 @@ QQmlApplicationEngine &LiveQmlEngine::qmlEngine()
 {
     return m_engine;
 }
-
-} // namespace DesignPattern
