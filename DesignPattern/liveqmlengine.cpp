@@ -25,8 +25,7 @@ LiveQmlEngine::LiveQmlEngine(QObject *parent, QString sourceDir)
     connect(&m_watcher, &QFileSystemWatcher::directoryChanged, this, &LiveQmlEngine::onFileChanged);
 
     QDir dir(qmlSourceDir());
-    qDebug() << dir << qmlSourceDir();
-    QList<QFileInfo> list = dir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
+    QList<QFileInfo> list = dir.entryInfoList(QDir::AllDirs | QDir::NoDotDot);
 
     while (!list.isEmpty()) {
         dir.cd(list.first().absoluteFilePath());
