@@ -17,9 +17,7 @@ LiveQmlEngine::LiveQmlEngine(QObject *parent, QString sourceDir)
 {
     auto *context = qmlEngine().rootContext();
     context->setContextProperty("_liveQmlEngine", this);
-    qDebug() << "Liver";
 #ifdef ENABLE_HOTRELOADING
-    qDebug() << "Liver";
 
     connect(&m_engine, &QQmlApplicationEngine::objectCreated, this, &LiveQmlEngine::onObjectCreated);
 
@@ -50,18 +48,18 @@ LiveQmlEngine::LiveQmlEngine(QObject *parent, QString sourceDir)
 void LiveQmlEngine::createWindow(QUrl path)
 {
     QVariantMap properties;
-    if (m_windows.contains(path)) {
-        properties["visible"] = m_windows[path]->property("visible");
-        m_windows[path]->deleteLater();
-    }
 
-    QString source = path.toString().split("/").last();
+    QString source = path.toString();
 #ifdef ENABLE_HOTRELOADING //Setup qml source dir
     source.prepend(qmlSourceDir());
     source.prepend("file:/");
 #else
-    source.prepend("qrc:/");
+    source.prepend("qrc:");
 #endif
+    if (m_windows.contains(QUrl(source))) {
+        properties["visible"] = m_windows[QUrl(source)]->property("visible");
+        delete m_windows[QUrl(source)];
+    }
 
     m_engine.setInitialProperties(properties);
     m_engine.load(source);
@@ -81,8 +79,9 @@ void LiveQmlEngine::onDestroyed(QObject *window)
 void LiveQmlEngine::onFileChanged(QString path)
 {
     m_engine.clearComponentCache();
-    for (auto const it : m_windows.keys())
-        createWindow(it);
+    for (auto it : m_windows.keys()) {
+        createWindow(QUrl(it.toString().remove("file:///" + qmlSourceDir())));
+    }
 
     if (QFile::exists(path)) {
         m_watcher.addPath(path);

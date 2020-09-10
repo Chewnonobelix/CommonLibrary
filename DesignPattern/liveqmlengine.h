@@ -1,12 +1,12 @@
 #pragma once
 
+#include <QDir>
+#include <QFileSystemWatcher>
+#include <QQmlApplicationEngine>
+#include <QQmlContext>
+#include <QThread>
 #include <QtCore/QObject>
 #include <QtCore/qglobal.h>
-#include <QQmlApplicationEngine>
-#include <QFileSystemWatcher>
-#include <QDir>
-#include <QQmlContext>
-
 //namespace DesignPattern {
 class LiveQmlEngine : public QObject
 {
@@ -21,6 +21,7 @@ public:
     LiveQmlEngine(QObject * = nullptr, QString = QString());
     ~LiveQmlEngine() = default;
     QQmlApplicationEngine &qmlEngine();
+    inline QQmlApplicationEngine const &qmlEngine() const { return m_engine; }
     Q_INVOKABLE void createWindow(QUrl);
 
     QString qmlSourceDir() const;
