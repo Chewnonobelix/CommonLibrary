@@ -20,3 +20,20 @@ void MetaData::removeMetadata(QString key)
     if (m_metadata.contains(key))
         m_metadata.remove(key);
 }
+
+MetaData::MetaData(const QJsonObject &obj)
+{
+    auto map = obj.toVariantMap();
+
+    for (auto it : map.keys())
+        setMetadata(it, map[it]);
+}
+
+MetaData::operator QJsonObject() const
+{
+    QJsonObject obj;
+    for (auto it : metadataList())
+        obj.insert(it, metaData<QString>(it));
+
+    return obj;
+}

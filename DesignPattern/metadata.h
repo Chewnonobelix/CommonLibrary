@@ -1,6 +1,7 @@
 #ifndef METADATA_H
 #define METADATA_H
 
+#include <QJsonObject>
 #include <QMap>
 #include <QVariant>
 
@@ -12,6 +13,7 @@ private:
 public:
     MetaData() = default;
     MetaData(const MetaData&) = default;
+    MetaData(const QJsonObject &);
     ~MetaData() = default;
     MetaData& operator =(const MetaData&) = default;
 
@@ -35,6 +37,8 @@ public:
     }
 
     void removeMetadata(QString);
+
+    operator QJsonObject() const;
 };
 
 #endif // METADATA_H
