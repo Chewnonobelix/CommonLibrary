@@ -38,7 +38,7 @@ public:
 
     void removeMetadata(QString);
 
-    operator QJsonObject() const;
+	virtual operator QJsonObject() const;
 };
 
 #endif // METADATA_H
