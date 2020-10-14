@@ -14,7 +14,7 @@ public:
     MetaData() = default;
     MetaData(const MetaData&) = default;
     MetaData(const QJsonObject &);
-    ~MetaData() = default;
+    virtual ~MetaData() = default;
     MetaData& operator =(const MetaData&) = default;
 
     bool hasMetadata(QString name) const;
