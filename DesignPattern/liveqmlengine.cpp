@@ -68,6 +68,8 @@ void LiveQmlEngine::onObjectCreated(QObject *window, QUrl url)
 {
     m_windows[url] = window;
     connect(window, &QObject::destroyed, this, &LiveQmlEngine::onDestroyed);
+    if(!window)
+        m_engine.loadData("import QtQuick 2.15; import QtQuick.Controls 2.15;  ApplicationWindow { width: 600; height: 400; Text {anchors.fill: parent; text: \"Error in page\"}}", url);
 }
 
 void LiveQmlEngine::onDestroyed(QObject *window)
