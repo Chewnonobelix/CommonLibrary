@@ -4,6 +4,7 @@
 #include <QFileSystemWatcher>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QQmlComponent>
 #include <QThread>
 #include <QtCore/QObject>
 #include <QtCore/qglobal.h>
@@ -22,7 +23,7 @@ public:
     ~LiveQmlEngine() = default;
     QQmlApplicationEngine &qmlEngine();
     inline QQmlApplicationEngine const &qmlEngine() const { return m_engine; }
-    Q_INVOKABLE void createWindow(QUrl);
+    Q_INVOKABLE void createWindow(QUrl, QQmlContext * = nullptr);
 
     QString qmlSourceDir() const;
     void setQmlSourceDir(QString);

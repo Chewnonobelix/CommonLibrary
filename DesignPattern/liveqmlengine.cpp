@@ -44,7 +44,7 @@ LiveQmlEngine::LiveQmlEngine(QObject *parent, QString sourceDir)
 #endif
 }
 
-void LiveQmlEngine::createWindow(QUrl path)
+void LiveQmlEngine::createWindow(QUrl path, QQmlContext* context)
 {
     QVariantMap properties;
 
@@ -60,8 +60,12 @@ void LiveQmlEngine::createWindow(QUrl path)
         delete m_windows[QUrl(source)];
     }
 
-    m_engine.setInitialProperties(properties);
-    m_engine.load(source);
+    auto comp = new QQmlComponent(&m_engine, QUrl(source));
+
+    if(properties.isEmpty())
+        comp->create(context);
+    else
+        comp->createWithInitialProperties(properties, context);
 }
 
 void LiveQmlEngine::onObjectCreated(QObject *window, QUrl url)
