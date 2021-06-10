@@ -19,8 +19,6 @@ LiveQmlEngine::LiveQmlEngine(QObject *parent, QString sourceDir)
     context->setContextProperty("_liveQmlEngine", this);
 #ifdef ENABLE_HOTRELOADING
 
-    connect(&m_engine, &QQmlApplicationEngine::objectCreated, this, &LiveQmlEngine::onObjectCreated);
-
     connect(&m_watcher, &QFileSystemWatcher::fileChanged, this, &LiveQmlEngine::onFileChanged);
     connect(&m_watcher, &QFileSystemWatcher::directoryChanged, this, &LiveQmlEngine::onFileChanged);
 
@@ -62,15 +60,19 @@ void LiveQmlEngine::createWindow(QUrl path, QQmlContext* context)
 
     auto comp = new QQmlComponent(&m_engine, QUrl(source));
 
+    QObject* item;
     if(properties.isEmpty())
-        comp->create(context);
+        item = comp->create(context);
     else
-        comp->createWithInitialProperties(properties, context);
+        item = comp->createWithInitialProperties(properties, context);
+
+    onObjectCreated(item, QUrl(source), context);
 }
 
-void LiveQmlEngine::onObjectCreated(QObject *window, QUrl url)
+void LiveQmlEngine::onObjectCreated(QObject *window, QUrl url, QQmlContext* context)
 {
     m_windows[url] = window;
+    m_context[url] = context;
     connect(window, &QObject::destroyed, this, &LiveQmlEngine::onDestroyed);
     if(!window)
         m_engine.loadData("import QtQuick 2.15; import QtQuick.Controls 2.15;  ApplicationWindow { width: 600; height: 400; Text {anchors.fill: parent; text: \"Error in page\"}}", url);
@@ -85,7 +87,7 @@ void LiveQmlEngine::onFileChanged(QString path)
 {
     m_engine.clearComponentCache();
     for (auto it : m_windows.keys()) {
-        createWindow(QUrl(it.toString().remove("file:///" + qmlSourceDir())));
+        createWindow(QUrl(it.toString().remove("file:///" + qmlSourceDir())), m_context[it]);
     }
 
     if (QFile::exists(path)) {

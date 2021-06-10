@@ -14,6 +14,7 @@ class LiveQmlEngine : public QObject
     Q_OBJECT
 private:
     QMap<QUrl, QObject *> m_windows;
+    QMap<QUrl, QQmlContext*> m_context;
     QQmlApplicationEngine m_engine;
     QFileSystemWatcher m_watcher;
     QString m_qmlSourceDir;
@@ -31,6 +32,6 @@ public:
 public slots:
     void onFileChanged(QString);
     void onDestroyed(QObject *);
-    void onObjectCreated(QObject *, QUrl);
+    void onObjectCreated(QObject *, QUrl, QQmlContext *);
 };
 //} // namespace DesignPattern
