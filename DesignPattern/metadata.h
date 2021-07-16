@@ -22,16 +22,12 @@ public:
     QStringList metadataList() const;
 
     template<class T>
-    T& metaData(QString name) const
+    T metaData(QString name) const
     {
-        static T ret;
-        if(hasMetadata(name)) {
-            static T find;
-            find = m_metadata[name].value<T>();
-            return find;
-        }
+        if(hasMetadata(name))
+            return m_metadata[name].value<T>();
         else
-            return ret;
+            return T();
     }
 
     template<class T>
@@ -42,7 +38,7 @@ public:
 
     void removeMetadata(QString);
 
-    virtual operator QJsonObject() const;
+	virtual operator QJsonObject() const;
 };
 
 #endif // METADATA_H
