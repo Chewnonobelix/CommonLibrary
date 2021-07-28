@@ -31,12 +31,17 @@ public:
     }
 
     template<class T>
-    void setMetadata(QString name, T value)
+    bool setMetadata(QString name, T value)
     {
-        m_metadata[name] = QVariant::fromValue(value);
+        if(m_metadata[name] != QVariant::fromValue(value)) {
+            m_metadata[name] = QVariant::fromValue(value);
+            return true;
+        }
+
+        return false;
     }
 
-    void removeMetadata(QString);
+    bool removeMetadata(QString);
 
 	virtual operator QJsonObject() const;
 };

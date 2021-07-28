@@ -15,10 +15,14 @@ QStringList MetaData::metadataList() const
     return m_metadata.keys();
 }
 
-void MetaData::removeMetadata(QString key)
+bool MetaData::removeMetadata(QString key)
 {
-    if (m_metadata.contains(key))
+    if (m_metadata.contains(key)) {
         m_metadata.remove(key);
+        return true;
+    }
+
+    return false;
 }
 
 MetaData::MetaData(const QJsonObject &obj)
