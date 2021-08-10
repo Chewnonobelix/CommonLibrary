@@ -2,6 +2,9 @@
 
 //using namespace DesignPattern;
 
+Q_LOGGING_CATEGORY(liveengineerror, "liveengine.componentError")
+Q_LOGGING_CATEGORY(liveenginelog, "liveengine.log")
+
 QString LiveQmlEngine::qmlSourceDir() const
 {
     return m_qmlSourceDir;
@@ -27,7 +30,7 @@ LiveQmlEngine::LiveQmlEngine(QObject *parent, QString sourceDir)
 
     while (!list.isEmpty()) {
         dir.cd(list.first().absoluteFilePath());
-        qDebug() << dir.absolutePath();
+        qCDebug(liveenginelog) << dir.absolutePath();
         auto infoList = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
         for (auto it : infoList) {
             if (it.isDir()) {
@@ -38,7 +41,7 @@ LiveQmlEngine::LiveQmlEngine(QObject *parent, QString sourceDir)
         }
         list.pop_front();
     }
-    qDebug() << m_watcher.files();
+    qCDebug(liveenginelog) << m_watcher.files();
 #endif
 }
 
@@ -67,6 +70,7 @@ void LiveQmlEngine::createWindow(QUrl path, QQmlContext* context)
         item = comp->createWithInitialProperties(properties, context);
 
     onObjectCreated(item, QUrl(source), context);
+    qCDebug(liveengineerror)<<path<<comp->errorString();
 }
 
 void LiveQmlEngine::onObjectCreated(QObject *window, QUrl url, QQmlContext* context)

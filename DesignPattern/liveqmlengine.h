@@ -8,6 +8,11 @@
 #include <QThread>
 #include <QtCore/QObject>
 #include <QtCore/qglobal.h>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(livreengineerror)
+Q_DECLARE_LOGGING_CATEGORY(livreenginelog)
+
 //namespace DesignPattern {
 class LiveQmlEngine : public QObject
 {
