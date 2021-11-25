@@ -22,12 +22,12 @@ public:
     QStringList metadataList() const;
 
     template<class T>
-    T metaData(QString name) const
+    T metaData(QString name, T defaultValue = T()) const
     {
         if(hasMetadata(name))
             return m_metadata[name].value<T>();
         else
-            return T();
+            return defaultValue;
     }
 
     template<class T>
