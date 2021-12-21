@@ -4,6 +4,7 @@
 #include <QJsonObject>
 #include <QMap>
 #include <QVariant>
+#include <QJsonArray>
 
 class MetaData
 {
