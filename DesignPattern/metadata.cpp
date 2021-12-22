@@ -52,8 +52,20 @@ MetaData::MetaData(const QJsonObject &obj)
 MetaData::operator QJsonObject() const
 {
     QJsonObject obj;
-    for (auto it : metadataList())
-        obj.insert(it, metaData<QString>(it));
+    for (auto it : metadataList()) {
+        if(!metaData<QStringList>(it).isEmpty()) {
+            QJsonArray array;
+
+            for(auto it2: metaData<QStringList>(it)) {
+                array<<it2;
+            }
+
+            obj[it] = array;
+        }
+        else {
+            obj.insert(it, metaData<QString>(it));
+        }
+    }
 
     return obj;
 }
