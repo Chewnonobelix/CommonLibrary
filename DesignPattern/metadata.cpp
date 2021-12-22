@@ -53,7 +53,7 @@ MetaData::operator QJsonObject() const
 {
     QJsonObject obj;
     for (auto it : metadataList()) {
-        if(!metaData<QStringList>(it).isEmpty()) {
+        if(metaData<QString>(it).isEmpty()) {
             QJsonArray array;
 
             for(auto it2: metaData<QStringList>(it)) {
