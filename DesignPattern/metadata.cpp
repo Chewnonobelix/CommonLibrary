@@ -69,3 +69,21 @@ MetaData::operator QJsonObject() const
 
     return obj;
 }
+
+QPartialOrdering compare(const MetaData& m1, const MetaData& m2, const QString key)
+{
+    if(key.isEmpty())
+        return QPartialOrdering::Unordered;
+
+    if(!m1.hasMetadata(key) || !m2.hasMetadata(key))
+        return QPartialOrdering::Unordered;
+
+    auto v1 = m1.metaData<QString>(key), v2 = m1.metaData<QString>(key);
+
+    if(v1 < v2)
+        return QPartialOrdering::Less;
+    else if(v1 == v2)
+        return QPartialOrdering::Equivalent;
+    else
+        return QPartialOrdering::Greater;
+}

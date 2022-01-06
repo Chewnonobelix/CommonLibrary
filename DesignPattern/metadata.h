@@ -45,6 +45,7 @@ public:
     bool removeMetadata(QString);
 
 	virtual operator QJsonObject() const;
+    friend QPartialOrdering compare(const MetaData&, const MetaData&, const QString);
 };
 
 #endif // METADATA_H
