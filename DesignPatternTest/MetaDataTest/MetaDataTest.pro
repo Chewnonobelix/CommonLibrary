@@ -6,6 +6,9 @@ CONFIG -= app_bundle
 
 
 INCLUDEPATH += $${PWD}/../../DesignPattern
+LIBS += -L$$OUT_PWD/../../DesignPattern/debug -lDesignPattern
+
+message($$OUT_PWD)
 
 TEMPLATE = app
 
