@@ -139,9 +139,32 @@ void MetaDataTest::metadataCount_data()
     QTest::newRow("Duplicate")<<QStringList{"data1", "data2", "data1"}<<2;
 }
 
-void MetaDataTest::valueMetadata() {}
+void MetaDataTest::valueMetadata()
+{
+    QFETCH(MetaData, model);
+    QFETCH(QString, field);
+    QFETCH(double, res);
 
-void MetaDataTest::valueMetadata_data() {}
+    QCOMPARE(model.metaData<double>(field), res);
+}
+
+void MetaDataTest::valueMetadata_data()
+{
+    QTest::addColumn<MetaData>("model");
+    QTest::addColumn<QString>("field");
+    QTest::addColumn<double>("res");
+
+    MetaData model;
+    model.setMetadata("data1", 1.2);
+    model.setMetadata("data2", 1);
+    model.setMetadata("data3", -1.2);
+    model.setMetadata("data4", 1.61);
+
+    QTest::addRow("1.2")<<model<<"data1"<<1.2;
+    QTest::addRow("1")<<model<<"data2"<<1.;
+    QTest::addRow("-1.2")<<model<<"data3"<<-1.2;
+    QTest::addRow("1.61")<<model<<"data4"<<1.61;
+}
 
 void MetaDataTest::removeMetadata()
 {
@@ -171,17 +194,99 @@ void MetaDataTest::removeMetadata_data()
     QTest::addRow("!02")<<md<<"data02"<<QStringList{"data01", "data03"}<<false;
 }
 
-void MetaDataTest::compareMetadata() {}
+void MetaDataTest::compareMetadata()
+{
+    QFETCH(MetaData, m1);
+    QFETCH(MetaData, m2);
+    QFETCH(QString, field);
+    QFETCH(QPartialOrdering, res);
 
-void MetaDataTest::compareMetadata_data() {}
+    QCOMPARE(compare(m1, m2, field), res);
+}
 
-void MetaDataTest::toJsonMetadata() {}
+void MetaDataTest::compareMetadata_data()
+{
+    QTest::addColumn<MetaData>("m1");
+    QTest::addColumn<MetaData>("m2");
+    QTest::addColumn<QString>("field");
+    QTest::addColumn<QPartialOrdering>("res");
 
-void MetaDataTest::toJsonMetadata_data() {}
+    MetaData m1, m2;
+    m1.setMetadata("data01", 1);
+    m1.setMetadata("data02", 3);
+    m1.setMetadata("data03", 0);
+    m1.setMetadata("data04", 0);
+    m2.setMetadata("data01", 1);
+    m2.setMetadata("data02", 2);
+    m2.setMetadata("data04", 2);
+    m2.setMetadata("data05", 2);
 
-void MetaDataTest::fromJsonMetadata() {}
+    QTest::addRow("01")<<m1<<m2<<"data01"<<QPartialOrdering::Equivalent;
+    QTest::addRow("02")<<m1<<m2<<"data02"<<QPartialOrdering::Greater;
+    QTest::addRow("03")<<m1<<m2<<"data03"<<QPartialOrdering::Unordered;
+    QTest::addRow("04")<<m1<<m2<<"data04"<<QPartialOrdering::Less;
+    QTest::addRow("05")<<m1<<m2<<"data05"<<QPartialOrdering::Unordered;
+}
 
-void MetaDataTest::fromJsonMetadata_data() {}
+void MetaDataTest::toJsonMetadata()
+{
+    QFETCH(MetaData, model);
+    QFETCH(QJsonObject, json);
+
+    qDebug()<<(QJsonObject)model<<json;
+    QCOMPARE((QJsonObject)model, json);
+}
+
+void MetaDataTest::toJsonMetadata_data()
+{
+    QTest::addColumn<MetaData>("model");
+    QTest::addColumn<QJsonObject>("json");
+
+    MetaData md;
+    md.setMetadata("data01", 0);
+    md.setMetadata("data02", "02");
+    md.setMetadata("data03", QStringList{"02", "03"});
+
+    QJsonObject res;
+    res["data01"] = 0;
+    res["data02"] = "02";
+    res["data03"] = QJsonArray{"02", "03"};
+
+    QTest::addRow("To json")<<md<<res;
+}
+
+void MetaDataTest::fromJsonMetadata()
+{
+    QFETCH(QJsonObject, model);
+    QFETCH(MetaData, res);
+
+    MetaData md(model);
+
+    QCOMPARE(md.metadataList(), res.metadataList());
+
+    for(auto it: md.metadataList()) {
+        qDebug()<<it;
+        QCOMPARE(md.metaData<QVariant>(it), res.metaData<QVariant>(it));
+    }
+}
+
+void MetaDataTest::fromJsonMetadata_data()
+{
+    QTest::addColumn<QJsonObject>("model");
+    QTest::addColumn<MetaData>("res");
+
+    MetaData res;
+    res.setMetadata("data01", 0);
+    res.setMetadata("data02", "02");
+    res.setMetadata("data03", QStringList{"02", "03"});
+
+    QJsonObject md;
+    md["data01"] = 0;
+    md["data02"] = "02";
+    md["data03"] = QJsonArray::fromStringList({"02", "03"});
+
+    QTest::addRow("From json")<<md<<res;
+}
 
 QTEST_APPLESS_MAIN(MetaDataTest)
 
