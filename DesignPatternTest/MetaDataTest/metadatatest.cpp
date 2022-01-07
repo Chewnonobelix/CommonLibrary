@@ -265,7 +265,6 @@ void MetaDataTest::fromJsonMetadata()
     QCOMPARE(md.metadataList(), res.metadataList());
 
     for(auto it: md.metadataList()) {
-        qDebug()<<it;
         QCOMPARE(md.metaData<QVariant>(it), res.metaData<QVariant>(it));
     }
 }
@@ -277,11 +276,11 @@ void MetaDataTest::fromJsonMetadata_data()
 
     MetaData res;
     res.setMetadata("data01", 0);
-    res.setMetadata("data02", "02");
+    res.setMetadata("data02", QString("02"));
     res.setMetadata("data03", QStringList{"02", "03"});
 
     QJsonObject md;
-    md["data01"] = 0;
+    md["data01"] = "0";
     md["data02"] = "02";
     md["data03"] = QJsonArray::fromStringList({"02", "03"});
 
