@@ -52,18 +52,14 @@ MetaData::MetaData(const QJsonObject &obj)
 MetaData::operator QJsonObject() const
 {
     QJsonObject obj;
+
     for (auto it : metadataList()) {
         if(metaData<QString>(it).isEmpty()) {
-            QJsonArray array;
-
-            for(auto it2: metaData<QStringList>(it)) {
-                array<<it2;
-            }
-
-            obj[it] = array;
+            obj[it] = QJsonArray::fromVariantList(metaData<QVariantList>(it));
         }
         else {
-            obj.insert(it, metaData<QString>(it));
+
+            obj[it] = QJsonValue::fromVariant(metaData<QString>(it));
         }
     }
 

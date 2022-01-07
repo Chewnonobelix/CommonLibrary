@@ -244,11 +244,11 @@ void MetaDataTest::toJsonMetadata_data()
 
     MetaData md;
     md.setMetadata("data01", 0);
-    md.setMetadata("data02", "02");
+    md.setMetadata("data02", QString("02"));
     md.setMetadata("data03", QStringList{"02", "03"});
 
     QJsonObject res;
-    res["data01"] = 0;
+    res["data01"] = "0";
     res["data02"] = "02";
     res["data03"] = QJsonArray{"02", "03"};
 
