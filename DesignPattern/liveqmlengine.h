@@ -38,5 +38,9 @@ public slots:
     void onFileChanged(QString);
     void onDestroyed(QObject *);
     void onObjectCreated(QObject *, QUrl, QQmlContext *);
+
+signals:
+    void sObjectCreated(QUrl, QObject*);
+    void sObjectDestroyed(QUrl);
 };
 //} // namespace DesignPattern

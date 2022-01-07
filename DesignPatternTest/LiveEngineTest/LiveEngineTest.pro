@@ -1,4 +1,4 @@
-QT += testlib xml core
+QT += testlib xml core quick qml
 QT -= gui
 
 CONFIG += qt console warn_on depend_includepath testcase c++latest
@@ -13,4 +13,9 @@ TEMPLATE = app
 SOURCES += \
     tst_liveengine.cpp
 
-DEFINES += ENABLE_HOTRELOADING
+#DEFINES += ENABLE_HOTRELOADING
+
+RESOURCES += \
+    liveenginetest.qrc
+
+DEFINES += FOLDER=\\\"$$PWD\\\"
