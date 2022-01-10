@@ -83,7 +83,10 @@ void LiveQmlEngine::onObjectCreated(QObject *window, QUrl url/*, QQmlContext* co
 
 void LiveQmlEngine::onDestroyed(QObject *window)
 {
-    m_windows.remove(m_windows.key(window));
+    auto url = m_windows.key(window);
+    m_windows.remove(url);
+
+    emit sObjectDestroyed(url);
 }
 
 void LiveQmlEngine::onFileChanged(QString path)
