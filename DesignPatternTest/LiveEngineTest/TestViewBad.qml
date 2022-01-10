@@ -1,8 +1,8 @@
 import QtQuick 2.0
 
-Item {
+It {
     Rectangle {
-        anchors.fill: par
+        anchors.fill: parent
         color: "red"
     }
 }

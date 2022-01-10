@@ -63,26 +63,21 @@ void LiveQmlEngine::createWindow(QUrl path, QQmlContext* context)
 
     auto comp = new QQmlComponent(&m_engine, QUrl(source));
 
+    m_context[QUrl(source)] = context;
     QObject* item;
     if(properties.isEmpty())
         item = comp->create(context);
     else
         item = comp->createWithInitialProperties(properties, context);
 
-    onObjectCreated(item, QUrl(source), context);
+    onObjectCreated(item, QUrl(source)/*, context*/);
     qCDebug(liveengineerror)<<path<<comp->errorString();
 }
 
-void LiveQmlEngine::onObjectCreated(QObject *window, QUrl url, QQmlContext* context)
+void LiveQmlEngine::onObjectCreated(QObject *window, QUrl url/*, QQmlContext* context*/)
 {
     m_windows[url] = window;
-    m_context[url] = context;
     connect(window, &QObject::destroyed, this, &LiveQmlEngine::onDestroyed);
-
-    qDebug()<<"Wesh"<<window<<url;
-    if(!window)
-        m_engine.loadData("import QtQuick 2.15; import QtQuick.Controls 2.15;  ApplicationWindow { width: 600; height: 400; Text {anchors.fill: parent; text: \"Error in page\"}}", url);
-
     emit sObjectCreated(url, window);
 }
 

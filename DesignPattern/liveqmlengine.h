@@ -37,7 +37,7 @@ public:
 public slots:
     void onFileChanged(QString);
     void onDestroyed(QObject *);
-    void onObjectCreated(QObject *, QUrl, QQmlContext *);
+    void onObjectCreated(QObject *, QUrl);
 
 signals:
     void sObjectCreated(QUrl, QObject*);

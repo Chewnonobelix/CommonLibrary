@@ -61,8 +61,8 @@ void TestLiveEngine::windowCreation_data()
 
     auto engine = QSharedPointer<LiveQmlEngine>::create(nullptr, QString(FOLDER));
 
-    QTest::addRow("create ok")<<engine<<"/TestViewOk.qml"<<QUrl(QString(FOLDER)+"/TestViewOk.qml")<<true;
-    QTest::addRow("create fail")<<engine<<"/TestViewBad.qml"<<QUrl(QString(FOLDER)+"/TestViewBad.qml")<<false;
+    QTest::addRow("create ok")<<engine<<"/TestViewOk.qml"<<QUrl("file:///"+QString(FOLDER)+"/TestViewOk.qml")<<true;
+    QTest::addRow("create fail")<<engine<<"/TestViewBad.qml"<<QUrl("file:///"+QString(FOLDER)+"/TestViewBad.qml")<<false;
 }
 
 void TestLiveEngine::fileChanged() {}
