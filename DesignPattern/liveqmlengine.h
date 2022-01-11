@@ -22,17 +22,17 @@ private:
     QMap<QUrl, QQmlContext*> m_context;
     QQmlApplicationEngine m_engine;
     QFileSystemWatcher m_watcher;
-    QString m_qmlSourceDir;
+    QStringList m_qmlSourceDir;
 
 public:
-    LiveQmlEngine(QObject * = nullptr, QString = QString());
+    LiveQmlEngine(QObject * = nullptr, QStringList = QStringList());
     ~LiveQmlEngine() = default;
     QQmlApplicationEngine &qmlEngine();
     inline QQmlApplicationEngine const &qmlEngine() const { return m_engine; }
     Q_INVOKABLE void createWindow(QUrl, QQmlContext * = nullptr);
 
-    QString qmlSourceDir() const;
-    void setQmlSourceDir(QString);
+    QStringList qmlSourceDir() const;
+    void setQmlSourceDir(QStringList);
 
 public slots:
     void onFileChanged(QString);

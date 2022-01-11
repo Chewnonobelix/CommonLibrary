@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>TestViewBad.qml</file>
-        <file>TestViewOk.qml</file>
+        <file>Folder1/TestViewOk.qml</file>
+        <file>Folder2/TestViewBad.qml</file>
     </qresource>
 </RCC>

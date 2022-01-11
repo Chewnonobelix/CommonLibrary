@@ -5,17 +5,17 @@
 Q_LOGGING_CATEGORY(liveengineerror, "liveengine.componentError")
 Q_LOGGING_CATEGORY(liveenginelog, "liveengine.log")
 
-QString LiveQmlEngine::qmlSourceDir() const
+QStringList LiveQmlEngine::qmlSourceDir() const
 {
     return m_qmlSourceDir;
 }
 
-void LiveQmlEngine::setQmlSourceDir(QString qmlSourceDir)
+void LiveQmlEngine::setQmlSourceDir(QStringList qmlSourceDir)
 {
     m_qmlSourceDir = qmlSourceDir;
 }
 
-LiveQmlEngine::LiveQmlEngine(QObject *parent, QString sourceDir)
+LiveQmlEngine::LiveQmlEngine(QObject *parent, QStringList sourceDir)
     : QObject(parent), m_qmlSourceDir(sourceDir)
 {
     auto *context = qmlEngine().rootContext();
@@ -25,21 +25,23 @@ LiveQmlEngine::LiveQmlEngine(QObject *parent, QString sourceDir)
     connect(&m_watcher, &QFileSystemWatcher::fileChanged, this, &LiveQmlEngine::onFileChanged);
     connect(&m_watcher, &QFileSystemWatcher::directoryChanged, this, &LiveQmlEngine::onFileChanged);
 
-    QDir dir(qmlSourceDir());
-    QList<QFileInfo> list = dir.entryInfoList(QDir::AllDirs | QDir::NoDotDot);
+    for(auto it: qmlSourceDir()) {
+        QDir dir(it);
+        QList<QFileInfo> list = dir.entryInfoList(QDir::AllDirs | QDir::NoDotDot);
 
-    while (!list.isEmpty()) {
-        dir.cd(list.first().absoluteFilePath());
-        qCDebug(liveenginelog) << dir.absolutePath();
-        auto infoList = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
-        for (auto it : infoList) {
-            if (it.isDir()) {
-                list << it;
-            } else if (it.suffix() == "qml") {
-                m_watcher.addPath(it.absoluteFilePath());
+        while (!list.isEmpty()) {
+            dir.cd(list.first().absoluteFilePath());
+            qCDebug(liveenginelog) << dir.absolutePath();
+            auto infoList = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
+            for (auto it : infoList) {
+                if (it.isDir()) {
+                    list << it;
+                } else if (it.suffix() == "qml") {
+                    m_watcher.addPath(it.absoluteFilePath());
+                }
             }
+            list.pop_front();
         }
-        list.pop_front();
     }
     qCDebug(liveenginelog) << m_watcher.files();
 #endif
@@ -51,7 +53,9 @@ void LiveQmlEngine::createWindow(QUrl path, QQmlContext* context)
 
     QString source = path.toString();
 #ifdef ENABLE_HOTRELOADING //Setup qml source dir
-    source.prepend(qmlSourceDir());
+    for(auto it: qmlSourceDir())
+        if(QFile::exists(it + "/" + source))
+            source.prepend(it);
     source.prepend("file:/");
 #else
     source.prepend("qrc:");
@@ -93,7 +97,13 @@ void LiveQmlEngine::onFileChanged(QString path)
 {
     m_engine.clearComponentCache();
     for (auto it : m_windows.keys()) {
-        createWindow(QUrl(it.toString().remove("file:///" + qmlSourceDir())), m_context[it]);
+        auto source = it.toString();
+        source.remove("file:///");
+        for(auto it2: qmlSourceDir())
+            if(source.startsWith(it2))
+                source.remove(0, it2.size());
+
+        createWindow(QUrl(source), m_context[it]);
     }
 
     if (QFile::exists(path)) {
