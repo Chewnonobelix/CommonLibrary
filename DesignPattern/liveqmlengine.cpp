@@ -56,10 +56,11 @@ void LiveQmlEngine::createWindow(QUrl path, QQmlContext* context)
     for(auto it: qmlSourceDir())
         if(QFile::exists(it + "/" + source))
             source.prepend(it);
-    source.prepend("file:/");
+    source.prepend("file:///");
 #else
     source.prepend("qrc:");
 #endif
+
     if (m_windows.contains(QUrl(source))) {
         properties["visible"] = m_windows[QUrl(source)]->property("visible");
         delete m_windows[QUrl(source)];
