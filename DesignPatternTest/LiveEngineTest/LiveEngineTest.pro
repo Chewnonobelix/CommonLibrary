@@ -18,4 +18,4 @@ SOURCES += \
 RESOURCES += \
     liveenginetest.qrc
 
-DEFINES += FOLDER=\\\"$$PWD\\\"
+DEFINES += FOLDER=\\\"$$PWD/Folder1/|$$PWD/Folder2/\\\"

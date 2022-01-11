@@ -59,10 +59,10 @@ void TestLiveEngine::windowCreation_data()
     QTest::addColumn<QUrl>("fullPath");
     QTest::addColumn<bool>("result");
 
-    auto engine = QSharedPointer<LiveQmlEngine>::create(nullptr, QStringList{QString(FOLDER)});
+    auto engine = QSharedPointer<LiveQmlEngine>::create(nullptr, QString(FOLDER).split("|"));
 
-    QTest::addRow("create ok")<<engine<<"/TestViewOk.qml"<<QUrl("file:///"+QString(FOLDER)+"/TestViewOk.qml")<<true;
-    QTest::addRow("create fail")<<engine<<"/TestViewBad.qml"<<QUrl("file:///"+QString(FOLDER)+"/TestViewBad.qml")<<false;
+    QTest::addRow("create ok")<<engine<<"TestViewOk.qml"<<QUrl("file:///"+QString(FOLDER).split("|").at(0)+"TestViewOk.qml")<<true;
+    QTest::addRow("create fail")<<engine<<"TestViewBad.qml"<<QUrl("file:///"+QString(FOLDER).split("|").at(1)+"TestViewBad.qml")<<false;
 }
 
 void TestLiveEngine::fileChanged()
@@ -90,9 +90,8 @@ void TestLiveEngine::fileChanged()
         file2.write(data.toLatin1());
         file2.close();
     }
-    QTest::qWait(1000);
+    QTest::qWait(5000);
     QCOMPARE(spy.count(), 2);
-
     {
         QFile file(fullPath);
         file.open(QIODevice::ReadOnly);
@@ -116,9 +115,9 @@ void TestLiveEngine::fileChanged_data()
     QTest::addColumn<QString>("newColor");
     QTest::addColumn<QString>("oldColor");
 
-    auto engine = QSharedPointer<LiveQmlEngine>::create(nullptr, QStringList{QString(FOLDER)});
+    auto engine = QSharedPointer<LiveQmlEngine>::create(nullptr, QString(FOLDER).split("|"));
 
-    QTest::addRow("create ok")<<engine<<"/TestViewOk.qml"<<QString(FOLDER)+"/TestViewOk.qml"<<QString("green")<<QString("red");
+    QTest::addRow("create ok")<<engine<<"TestViewOk.qml"<<QString(FOLDER).split("|").at(0)+"TestViewOk.qml"<<QString("green")<<QString("red");
 }
 
 void TestLiveEngine::objectDestroyed()
@@ -145,9 +144,9 @@ void TestLiveEngine::objectDestroyed_data()
     QTest::addColumn<QSharedPointer<LiveQmlEngine>>("engine");
     QTest::addColumn<QString>("baseName");
 
-    auto engine = QSharedPointer<LiveQmlEngine>::create(nullptr, QStringList{QString(FOLDER)});
+    auto engine = QSharedPointer<LiveQmlEngine>::create(nullptr, QString(FOLDER).split("|"));
 
-    QTest::addRow("Destroyed")<<engine<<"/TestViewOk.qml";
+    QTest::addRow("Destroyed")<<engine<<"TestViewOk.qml";
 }
 
 QTEST_MAIN(TestLiveEngine)
