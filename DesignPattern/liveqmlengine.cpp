@@ -54,7 +54,7 @@ void LiveQmlEngine::createWindow(QUrl path, QQmlContext* context)
     QString source = path.toString();
 #ifdef ENABLE_HOTRELOADING //Setup qml source dir
     for(auto it: qmlSourceDir())
-        if(QFile::exists(it + "/" + source))
+        if(QFile::exists(it + source))
             source.prepend(it);
     source.prepend("file:///");
 #else
