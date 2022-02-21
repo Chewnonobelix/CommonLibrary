@@ -125,3 +125,13 @@ QQmlApplicationEngine &LiveQmlEngine::qmlEngine()
 {
     return m_engine;
 }
+
+void LiveQmlEngine::removeWindow(QObject* windows)
+{
+    auto id = m_windows.key(windows);
+    auto url = m_ids.key(id);
+    m_ids.remove(url, id);
+    m_context.remove(id);
+    m_windows.remove(id);
+    windows->deleteLater();
+}

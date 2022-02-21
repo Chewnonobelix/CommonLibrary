@@ -10,6 +10,7 @@
 #include <QtCore/qglobal.h>
 #include <QLoggingCategory>
 #include <QUuid>
+#include <QQuickWindow>
 
 Q_DECLARE_LOGGING_CATEGORY(livreengineerror)
 Q_DECLARE_LOGGING_CATEGORY(livreenginelog)
@@ -33,6 +34,7 @@ public:
     QQmlApplicationEngine &qmlEngine();
     inline QQmlApplicationEngine const &qmlEngine() const { return m_engine; }
     Q_INVOKABLE void createWindow(QUrl, QQmlContext * = nullptr, QUuid = QUuid());
+    Q_INVOKABLE void removeWindow(QObject*);
 
     QStringList qmlSourceDir() const;
     void setQmlSourceDir(QStringList);
