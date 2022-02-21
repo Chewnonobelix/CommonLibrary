@@ -9,6 +9,7 @@
 #include <QtCore/QObject>
 #include <QtCore/qglobal.h>
 #include <QLoggingCategory>
+#include <QUuid>
 
 Q_DECLARE_LOGGING_CATEGORY(livreengineerror)
 Q_DECLARE_LOGGING_CATEGORY(livreenginelog)
@@ -18,8 +19,10 @@ class LiveQmlEngine : public QObject
 {
     Q_OBJECT
 private:
-    QMap<QUrl, QObject *> m_windows;
-    QMap<QUrl, QQmlContext*> m_context;
+    QMultiMap<QUrl, QUuid> m_ids;
+    QMap<QUuid, QObject *> m_windows;
+    QMap<QUuid, QQmlContext*> m_context;
+
     QQmlApplicationEngine m_engine;
     QFileSystemWatcher m_watcher;
     QStringList m_qmlSourceDir;
@@ -29,7 +32,7 @@ public:
     ~LiveQmlEngine() = default;
     QQmlApplicationEngine &qmlEngine();
     inline QQmlApplicationEngine const &qmlEngine() const { return m_engine; }
-    Q_INVOKABLE void createWindow(QUrl, QQmlContext * = nullptr);
+    Q_INVOKABLE void createWindow(QUrl, QQmlContext * = nullptr, QUuid = QUuid());
 
     QStringList qmlSourceDir() const;
     void setQmlSourceDir(QStringList);
@@ -37,7 +40,7 @@ public:
 public slots:
     void onFileChanged(QString);
     void onDestroyed(QObject *);
-    void onObjectCreated(QObject *, QUrl);
+    void onObjectCreated(QObject *, QUrl, QUuid);
 
 signals:
     void sObjectCreated(QUrl, QObject*);

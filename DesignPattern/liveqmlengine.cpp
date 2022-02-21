@@ -47,7 +47,7 @@ LiveQmlEngine::LiveQmlEngine(QObject *parent, QStringList sourceDir)
 #endif
 }
 
-void LiveQmlEngine::createWindow(QUrl path, QQmlContext* context)
+void LiveQmlEngine::createWindow(QUrl path, QQmlContext* context, QUuid id)
 {
     QVariantMap properties;
 
@@ -61,50 +61,59 @@ void LiveQmlEngine::createWindow(QUrl path, QQmlContext* context)
     source.prepend("qrc:");
 #endif
 
-    if (m_windows.contains(QUrl(source))) {
-        properties["visible"] = m_windows[QUrl(source)]->property("visible");
-        delete m_windows[QUrl(source)];
+    if (m_windows.contains(id)) {
+        properties["visible"] = m_windows[id]->property("visible");
+        delete m_windows[id];
     }
 
     auto comp = new QQmlComponent(&m_engine, QUrl(source));
+    if(id.isNull()) {
+        id = QUuid::createUuid();
+        m_ids.insert(path, id);
+    }
 
-    m_context[QUrl(source)] = context;
+    m_context[id] = context;
     QObject* item;
     if(properties.isEmpty())
         item = comp->create(context);
     else
         item = comp->createWithInitialProperties(properties, context);
 
-    onObjectCreated(item, QUrl(source)/*, context*/);
+    onObjectCreated(item, QUrl(source), id);
     qCDebug(liveengineerror)<<path<<comp->errorString();
 }
 
-void LiveQmlEngine::onObjectCreated(QObject *window, QUrl url/*, QQmlContext* context*/)
+void LiveQmlEngine::onObjectCreated(QObject *window, QUrl url, QUuid id)
 {
-    m_windows[url] = window;
+    m_windows[id] = window;
     connect(window, &QObject::destroyed, this, &LiveQmlEngine::onDestroyed);
     emit sObjectCreated(url, window);
 }
 
 void LiveQmlEngine::onDestroyed(QObject *window)
 {
-    auto url = m_windows.key(window);
-    m_windows.remove(url);
-
+    auto id = m_windows.key(window);
+    m_windows.remove(id);
+    m_context.remove(id);
+    auto url = m_ids.key(id);
+    m_ids.remove(url, id);
     emit sObjectDestroyed(url);
 }
 
 void LiveQmlEngine::onFileChanged(QString path)
 {
     m_engine.clearComponentCache();
-    for (auto it : m_windows.keys()) {
+
+    for (auto it : m_ids.keys()) {
         auto source = it.toString();
         source.remove("file:///");
         for(auto it2: qmlSourceDir())
             if(source.startsWith(it2))
                 source.remove(0, it2.size());
 
-        createWindow(QUrl(source), m_context[it]);
+        for(auto it3: m_ids.values(it)) {
+            createWindow(QUrl(source), m_context[it3], it3);
+        }
     }
 
     if (QFile::exists(path)) {
