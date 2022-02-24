@@ -45,7 +45,7 @@ public slots:
     void onObjectCreated(QObject *, QUrl, QUuid);
 
 signals:
-    void sObjectCreated(QUrl, QObject*);
+    void sObjectCreated(QUuid, QUrl, QObject*);
     void sObjectDestroyed(QUrl);
 };
 //} // namespace DesignPattern

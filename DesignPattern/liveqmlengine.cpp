@@ -69,8 +69,10 @@ void LiveQmlEngine::createWindow(QUrl path, QQmlContext* context, QUuid id)
     auto comp = new QQmlComponent(&m_engine, QUrl(source));
     if(id.isNull()) {
         id = QUuid::createUuid();
-        m_ids.insert(path, id);
     }
+
+    if(!m_ids.contains(path, id))
+        m_ids.insert(path, id);
 
     m_context[id] = context;
     QObject* item;
@@ -87,7 +89,7 @@ void LiveQmlEngine::onObjectCreated(QObject *window, QUrl url, QUuid id)
 {
     m_windows[id] = window;
     connect(window, &QObject::destroyed, this, &LiveQmlEngine::onDestroyed);
-    emit sObjectCreated(url, window);
+    emit sObjectCreated(id, url, window);
 }
 
 void LiveQmlEngine::onDestroyed(QObject *window)
