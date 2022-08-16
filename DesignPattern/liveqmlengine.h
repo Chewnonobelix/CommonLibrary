@@ -46,6 +46,6 @@ public slots:
 
 signals:
     void sObjectCreated(QUuid, QUrl, QObject*);
-    void sObjectDestroyed(QUrl);
+    void sObjectDestroyed(QUuid);
 };
 //} // namespace DesignPattern

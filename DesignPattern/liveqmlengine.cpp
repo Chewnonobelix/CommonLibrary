@@ -99,7 +99,7 @@ void LiveQmlEngine::onDestroyed(QObject *window)
     m_context.remove(id);
     auto url = m_ids.key(id);
     m_ids.remove(url, id);
-    emit sObjectDestroyed(url);
+    emit sObjectDestroyed(id);
 }
 
 void LiveQmlEngine::onFileChanged(QString path)

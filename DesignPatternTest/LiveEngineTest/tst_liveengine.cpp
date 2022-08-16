@@ -41,15 +41,15 @@ void TestLiveEngine::windowCreation()
     QFETCH(QUrl, fullPath);
     QFETCH(bool, result);
 
-    QSignalSpy spy(engine.data(), SIGNAL(sObjectCreated(QUrl,QObject*)));
+    QSignalSpy spy(engine.data(), SIGNAL(sObjectCreated(QUuid, QUrl, QObject*)));
 
     engine->createWindow(QUrl(baseName));
 
     QCOMPARE(spy.count(), 1);
     auto first = spy.takeFirst();
 
-    QCOMPARE(first.at(0).toUrl(), fullPath);
-    QCOMPARE(first.at(1).value<QObject*>() != nullptr, result);
+    QCOMPARE(first.at(1).toUrl(), fullPath);
+    QCOMPARE(first.at(2).value<QObject*>() != nullptr, result);
 }
 
 void TestLiveEngine::windowCreation_data()
@@ -73,7 +73,7 @@ void TestLiveEngine::fileChanged()
     QFETCH(QString, newColor);
     QFETCH(QString, oldColor);
 
-    QSignalSpy spy(engine.data(), SIGNAL(sObjectCreated(QUrl,QObject*)));
+    QSignalSpy spy(engine.data(), SIGNAL(sObjectCreated(QUuid, QUrl, QObject*)));
 
     engine->createWindow(QUrl(baseName));
 
@@ -125,15 +125,15 @@ void TestLiveEngine::objectDestroyed()
     QFETCH(QSharedPointer<LiveQmlEngine>, engine);
     QFETCH(QString, baseName);
 
-    QSignalSpy spy(engine.data(), SIGNAL(sObjectCreated(QUrl,QObject*)));
+    QSignalSpy spy(engine.data(), SIGNAL(sObjectCreated(QUuid, QUrl, QObject*)));
 
     engine->createWindow(QUrl(baseName));
 
     QCOMPARE(spy.count(), 1);
     auto first = spy.takeFirst();
 
-    auto pointer = first.at(1).value<QObject*>();
-    QSignalSpy destroyer(engine.data(), SIGNAL(sObjectDestroyed(QUrl)));
+    auto pointer = first.at(2).value<QObject*>();
+    QSignalSpy destroyer(engine.data(), SIGNAL(sObjectDestroyed(QUuid)));
     delete pointer;
 
     QCOMPARE(destroyer.count(), 1);
