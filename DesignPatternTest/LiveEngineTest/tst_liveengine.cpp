@@ -1,5 +1,6 @@
 #include <QTest>
 #include <QSignalSpy>
+#include <QTimer>
 
 #include <liveqmlengine.h>
 
@@ -90,7 +91,14 @@ void TestLiveEngine::fileChanged()
         file2.write(data.toLatin1());
         file2.close();
     }
-    QTest::qWait(5000);
+    QEventLoop loop; //Needed for processing timerEvent
+    QTimer timer;
+    QObject::connect(&timer, &QTimer::timeout, [&loop]() {
+        loop.quit();
+    });
+    timer.start(std::chrono::seconds(1));
+    loop.exec();
+
     QCOMPARE(spy.count(), 2);
     {
         QFile file(fullPath);
