@@ -6,10 +6,11 @@ CONFIG -= app_bundle
 
 
 INCLUDEPATH += $${PWD}/../../DesignPattern
-LIBS += -L$$OUT_PWD/../../DesignPattern/ -lDesignPattern
+win32:CONFIG(debug, debug| release): LIBS += -L$$OUT_PWD/../../DesignPattern/debug -lDesignPattern
+else:win32:CONFIG(release, debug| release): LIBS += -L$$OUT_PWD/../../DesignPattern/release -lDesignPattern
+else:unix:CONFIG(debug, debug| release): LIBS += -L$$OUT_PWD/../../DesignPattern/ -lDesignPattern
 
-message($$OUT_PWD)
-
+unix:message("Proute")
 TEMPLATE = app
 
 SOURCES += \
