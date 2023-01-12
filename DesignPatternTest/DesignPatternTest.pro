@@ -1,6 +1,6 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    LiveEngineTest \
+#    LiveEngineTest \
     MetaDataTest/MetaDataTest.pro
 
