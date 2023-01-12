@@ -4,7 +4,7 @@ QT += core quick
 TEMPLATE = lib
 DEFINES += DESIGNPATTERN_LIBRARY
 
-CONFIG += c++latest
+CONFIG += c++20
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -29,6 +29,9 @@ HEADERS += \
     metadata.h
 
 # Default rules for deployment.
+target.path = $$OUT_PWD
+message($${target.path})
+
 unix {
     target.path = /usr/lib
 }
